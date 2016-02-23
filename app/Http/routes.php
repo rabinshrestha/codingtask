@@ -15,13 +15,7 @@ Route::get('/', 'WelcomeController@index');
 
 Route::get('home', 'HomeController@index');
 
-Route::get('clients/list', function(){
-	return View('clients.list');
-});
-
-Route::get('clients/add', function(){
-	return View('clients.add');
-});
+Route::resource('clients', 'ClientsController');
 
 Route::controllers([
 	'auth' => 'Auth\AuthController',
