@@ -1,0 +1,10 @@
+.bs-example{
+	margin: 20px;
+}
+.col-centered{
+    float: none;
+    margin: 0 auto;
+}
+label.error{
+	display: none!important;
+}

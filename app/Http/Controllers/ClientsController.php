@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 use League\Csv\Reader;
 use League\Csv\Writer;
+use \SplFileObject;
 
 class ClientsController extends Controller {
 
@@ -21,10 +22,25 @@ class ClientsController extends Controller {
         'nationality'	=> 'required|max:50',
         'dateOfBirth'	=> 'required|date',
         'education'		=> 'max:100',
-        'contactMode'	=> 'required',
+        'contactMode'	=> 'required',	
     ];
 
-    private static $csvFileName = 'clients.csv';
+    private static $csvFileName;
+
+    public function __construct(){
+    	ClientsController::$csvFileName = storage_path(). '/clients.csv';
+    }
+
+    /**
+     * Get all clients list
+     * @return Array
+     */
+    private function getAllClients(){
+    	$reader = Reader::createFromPath(ClientsController::$csvFileName);
+		$data = $reader->fetchAll(); 
+		return $data;
+    }
+        
 
 	/**
 	 * Display a listing of the resource.
@@ -33,6 +49,7 @@ class ClientsController extends Controller {
 	 */
 	public function index()
 	{
+		dd($this->getAllClients());
 		return View('clients.index');
 	}
 
@@ -54,19 +71,26 @@ class ClientsController extends Controller {
 	public function store()
 	{
 		$input = Request::only('fullName', 'inputGender', 'phone', 'email', 'address', 'nationality', 'dateOfBirth', 'education', 'contactMode');
+		// dd($input);
+		// dd($input);
 		$validator = Validator::make($input, ClientsController::$validationRule);
 		if($validator->fails())
 			return redirect('clients/create')
 						->withErrors($validator)
 						->withInput();
 
-		//store data
-		// $reader = Reader::createFromPath('/path/to/your/csv/file.csv');
-		//the $reader object will use the 'r+' open mode as no `open_mode` parameter was supplied.
-		$writer = Writer::createFromPath(new SplFileObject(storage_path . ClientsController::$csvFileName, 'a+'), 'w');
-		$writer->insertOne(['john', 'doe', 'john.doe@example.com']);
+		$writer = Writer::createFromPath(new SplFileObject(ClientsController::$csvFileName, 'a+'), 'w');
+		$currentClients = $this->getAllClients();
+		if(!empty($currentClients))
+			$writer->insertAll($currentClients);
+		// $insertData = array(
+		// 	['john', 'doe', 'john.doe@example.com'],
+		// 	['john', 'doe', 'john.doe@example.com'],
+		// 	['john', 'doe', 'john.doe@example.com'],
+		// 	);
+		// $writer->insertAll($insertData);
+		$writer->insertOne($input);
 		return "Data Inserrted";
-		//the $writer object open mode will be 'w'!!				
 	}
 
 	/**

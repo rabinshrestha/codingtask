@@ -1,0 +1,4 @@
+Name,Gender,Phone,Email,Address,Nationality,DOB,Education,"Preferred Contact"
+"Rabin Shrestha",male,9849361400,rabin.shrestha@ebpearls.com,Lalitpur,Nepal,"jan 1 1992",BE,phone
+"Kumar Shrestha",male,123456,kumar.shrestha@gmail.com,"Homebush, New South Wales",Australia,"jan 1 1992",MS,phone
+"Rabin Shrestha",female,9849361400,rabin.shrestha@ebpearls.com,Lalitpur,Nepal,"jan 1 1992",,phone

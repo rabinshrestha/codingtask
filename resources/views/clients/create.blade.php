@@ -16,10 +16,10 @@
 			@endif
 
 			<div class="panel-body">
-			    {!! Form::open(array('url'=>'clients')) !!}
+			    {!! Form::open(array('url'=>'clients','id'=>'create-client')) !!}
 			    	<div class="form-group">
 			            {!! Form::label('Full Name', '', array('for'=>'fullName')) !!}
-			            {!! Form::text('fullName', Input::old('fullName'), array('class'=>'form-control', 'placeholder'=>'Full Name', 'id'=>'fullName')) !!}
+			            {!! Form::text('fullName', Input::old('fullName'), array('class'=>'form-control required', 'placeholder'=>'Full Name', 'id'=>'fullName')) !!}
 			        </div>
 			        <div class="form-group">
 			        	{!! Form::label('Gender', '', array('for'=>'inputGender')) !!}
@@ -53,15 +53,13 @@
 			        	{!! Form::label('Preferred mode of contact', '', array('for'=>'contactMode')) !!}
 			        	{!! Form::select('contactMode', array('phone'=>'Phone','email'=>'Email','none'=>'None'), Input::old('contactMode'),array('class'=>'form-select form-control')) !!}
 			        </div>
-			        {!! Form::button('Submit',array('type'=>'submit','class'=>'btn btn-primary')) !!}
+			        {!! Form::button('Submit',array('type'=>'button','class'=>'btn btn-primary')) !!}
 			    {!! Form::close() !!}	
 			</div>
 		</div>
 	</div>
-@endsection
+{!! HTML::script('public/js/jquery-1.12.1.min.js') !!}
+{!! HTML::script('public/js/jquery-validate/jquery.validate.min.js') !!}
+{!! HTML::script('public/js/main.js') !!}
 
-<script type="text/javascript">
-	$(document).ready(function(
-		$('.datepicker').datepicker();
-	));
-</script>
+@endsection
