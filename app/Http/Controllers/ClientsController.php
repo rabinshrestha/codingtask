@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 
 use Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\URL;
 
 use League\Csv\Reader;
 use League\Csv\Writer;
@@ -34,12 +35,14 @@ class ClientsController extends Controller {
      * Get all clients list
      * @return Array
      */
-    private function getAllClients(){
+    private function getAllClients($shiftFirst = FALSE){
     	$reader = Reader::createFromPath(ClientsController::$csvFileName);
 		$data = $reader->fetchAll(); 
+		if($shiftFirst && !empty($data)){
+			array_shift($data);
+		}
 		return $data;
     }
-        
 
 	/**
 	 * Display a listing of the resource.
@@ -48,8 +51,9 @@ class ClientsController extends Controller {
 	 */
 	public function index()
 	{
-		dd($this->getAllClients());
-		return View('clients.index');
+		$allClients = $this->getAllClients(TRUE);
+		return View('clients.index')
+					->with('clients', $allClients);
 	}
 
 	/**
@@ -75,13 +79,21 @@ class ClientsController extends Controller {
 			return redirect('clients/create')
 						->withErrors($validator)
 						->withInput();
+		try{
+			$writer = Writer::createFromPath(new SplFileObject(ClientsController::$csvFileName, 'a+'), 'w');
+			$currentClients = $this->getAllClients();
+			if(!empty($currentClients))
+				$writer->insertAll($currentClients);
+			$writer->insertOne($input);
+		}
+		catch(Exception $e){
+			return redirect('clients/create')
+						->withInput()
+						->with('error', $e->getMessage());
+		}
 
-		$writer = Writer::createFromPath(new SplFileObject(ClientsController::$csvFileName, 'a+'), 'w');
-		$currentClients = $this->getAllClients();
-		if(!empty($currentClients))
-			$writer->insertAll($currentClients);
-		$writer->insertOne($input);
-		return "Data Inserrted";
+		return redirect('clients')
+						->with('msg', 'Client Created Successfully');
 	}
 
 	/**

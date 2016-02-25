@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	$('#dateOfBirth').datepicker();
+	$('#clientsTable').DataTable();
 	formValidator();
 	/**
 	* Set error status for form-group div 
