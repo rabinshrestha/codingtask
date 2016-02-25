@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\URL;
 use League\Csv\Reader;
 use League\Csv\Writer;
 use \SplFileObject;
+require base_path(). '/vendor/logentries/logentries/LeLogger.php';
 
 class ClientsController extends Controller {
 
@@ -26,8 +27,17 @@ class ClientsController extends Controller {
     ];
 
     private static $csvFileName;
+    private $leLogger;
 
     public function __construct(){
+    	//setup lelogger 
+    	$LOGENTRIES_TOKEN = env('LOGENTRIES_TOKEN', 'b827e31f-1e1e-4162-b974-50df677ace4c');
+		$Persistent = true;
+		$SSL = false;
+		$Severity = LOG_DEBUG;
+		$this->leLogger = \LeLogger::getLogger($LOGENTRIES_TOKEN, $Persistent, $SSL, $Severity);
+
+		//setup csv file
     	ClientsController::$csvFileName = storage_path(). '/clients.csv';
     }
 
@@ -85,6 +95,9 @@ class ClientsController extends Controller {
 			if(!empty($currentClients))
 				$writer->insertAll($currentClients);
 			$writer->insertOne($input);
+
+			//write to log
+			$this->leLogger->Info('New Client Created with name: ' . $input['fullName']);
 		}
 		catch(Exception $e){
 			return redirect('clients/create')
