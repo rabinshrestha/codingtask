@@ -23,53 +23,43 @@ $(document).ready(function(){
 	*/
 	function formValidator(){
 		var form = $("#create-client");
-		$("#create-client").on('submit',function(){
-			var submitButton = $('#create-client button');
-			submitButton.attr('disabled',true);
-			resetError();
-			form.validate({
-				rules: {
-					fullName: {
-						required: true,
-						minlength: 5,
-						maxlength: 50,
-					},
-					phone: {
-						digits: true,
-						maxlength: 10,	
-					},
-					email: {
-						email: true,
-						maxlength: 100,
-					},
-					address: {
-						maxlength: 100,
-					},
-					nationality: {
-						required: true,
-						maxlength: 50,
-					},
-					dateOfBirth: {
-						required: true,
-						date: true,
-					},
-					education: {
-						maxlength: 100,
-					},
-	  			},
-	  			invalidHandler: function(event, validator) {
-					var errors = validator.numberOfInvalids();
-					if(errors){
-						showError(validator);
-					}
+		form.validate({
+			rules: {
+				fullName: {
+					required: true,
+					minlength: 5,
+					maxlength: 50,
+				},
+				phone: {
+					digits: true,
+					maxlength: 10,	
+				},
+				email: {
+					email: true,
+					maxlength: 100,
+				},
+				address: {
+					maxlength: 100,
+				},
+				nationality: {
+					required: true,
+					maxlength: 50,
+				},
+				dateOfBirth: {
+					required: true,
+					date: true,
+				},
+				education: {
+					maxlength: 100,
+				},
+  			},
+  			invalidHandler: function(event, validator) {
+  				resetError();
+				var errors = validator.numberOfInvalids();
+				if(errors){
+					showError(validator);
 				}
-			});
-			if(form.valid()){
-				form.submit();
-				return true;
 			}
-			submitButton.attr('disabled',false);
-			return false;
 		});
 	}
 });
