@@ -3,7 +3,6 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-// use Illuminate\Http\Request;
 use Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,7 +15,7 @@ class ClientsController extends Controller {
 	private static $validationRule = [
         'fullName' 		=> 'required|min:5|max:50',
         'inputGender'	=> 'required',
-        'phone' 		=> 'digits_between:0,10',
+        'phone' 		=> 'numeric|digits_between:0,10',
         'email' 		=> 'email|max:100',
         'address'		=> 'max:100',
         'nationality'	=> 'required|max:50',
@@ -71,8 +70,6 @@ class ClientsController extends Controller {
 	public function store()
 	{
 		$input = Request::only('fullName', 'inputGender', 'phone', 'email', 'address', 'nationality', 'dateOfBirth', 'education', 'contactMode');
-		// dd($input);
-		// dd($input);
 		$validator = Validator::make($input, ClientsController::$validationRule);
 		if($validator->fails())
 			return redirect('clients/create')
@@ -83,12 +80,6 @@ class ClientsController extends Controller {
 		$currentClients = $this->getAllClients();
 		if(!empty($currentClients))
 			$writer->insertAll($currentClients);
-		// $insertData = array(
-		// 	['john', 'doe', 'john.doe@example.com'],
-		// 	['john', 'doe', 'john.doe@example.com'],
-		// 	['john', 'doe', 'john.doe@example.com'],
-		// 	);
-		// $writer->insertAll($insertData);
 		$writer->insertOne($input);
 		return "Data Inserrted";
 	}
