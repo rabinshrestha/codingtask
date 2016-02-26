@@ -1,34 +1,34 @@
-<?php 
+<?php
+
 namespace App\Http\Controllers;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\URL;
 use League\Csv\Reader;
 use League\Csv\Writer;
-use \SplFileObject;
-require base_path(). '/vendor/logentries/logentries/LeLogger.php';
+use Request;
+use SplFileObject;
 
-class ClientsController extends Controller 
+require base_path().'/vendor/logentries/logentries/LeLogger.php';
+
+class ClientsController extends Controller
 {
     private static $validationRule = [
-        'fullName' 		=> 'required|min:5|max:50',
-        'inputGender'	=> 'required',
-        'phone' 		=> 'numeric|digits_between:0,10',
-        'email' 		=> 'email|max:100',
-        'address'		=> 'max:100',
-        'nationality'	=> 'required|max:50',
-        'dateOfBirth'	=> 'required|date',
-        'education'		=> 'max:100',
-        'contactMode'	=> 'required',	
+        'fullName'         => 'required|min:5|max:50',
+        'inputGender'      => 'required',
+        'phone'            => 'numeric|digits_between:0,10',
+        'email'            => 'email|max:100',
+        'address'          => 'max:100',
+        'nationality'      => 'required|max:50',
+        'dateOfBirth'      => 'required|date',
+        'education'        => 'max:100',
+        'contactMode'      => 'required',
     ];
     private static $csvFileName;
     private $leLogger;
+
     public function __construct()
     {
-        //setup lelogger 
+        //setup lelogger
         $LOGENTRIES_TOKEN = env('LOGENTRIES_TOKEN', 'b827e31f-1e1e-4162-b974-50df677ace4c');
         $Persistent = true;
         $SSL = false;
@@ -36,20 +36,22 @@ class ClientsController extends Controller
         $this->leLogger = \LeLogger::getLogger($LOGENTRIES_TOKEN, $Persistent, $SSL, $Severity);
 
         //setup csv file
-        ClientsController::$csvFileName = storage_path(). '/clients.csv';
+        self::$csvFileName = storage_path().'/clients.csv';
     }
 
     /**
-     * Get all clients list
-     * @return Array
+     * Get all clients list.
+     *
+     * @return array
      */
-    private function getAllClients($shiftFirst = FALSE)
+    private function getAllClients($shiftFirst = false)
     {
-        $reader = Reader::createFromPath(ClientsController::$csvFileName);
-        $data = $reader->fetchAll(); 
+        $reader = Reader::createFromPath(self::$csvFileName);
+        $data = $reader->fetchAll();
         if ($shiftFirst && !empty($data)) {
-        	array_shift($data);
+            array_shift($data);
         }
+
         return $data;
     }
 
@@ -60,9 +62,10 @@ class ClientsController extends Controller
      */
     public function index()
     {
-        $allClients = $this->getAllClients(TRUE);
+        $allClients = $this->getAllClients(true);
+
         return View('clients.index')
-            ->with('clients', $allClients);
+                    ->with('clients', $allClients);
     }
 
     /**
@@ -76,21 +79,21 @@ class ClientsController extends Controller
     }
 
     /**
-    * Store a newly created resource in storage.
-    *
-    * @return Response
-    */
+     * Store a newly created resource in storage.
+     *
+     * @return Response
+     */
     public function store()
     {
         $input = Request::only('fullName', 'inputGender', 'phone', 'email', 'address', 'nationality', 'dateOfBirth', 'education', 'contactMode');
-        $validator = Validator::make($input, ClientsController::$validationRule);
+        $validator = Validator::make($input, self::$validationRule);
         if ($validator->fails()) {
             return redirect('clients/create')
-                ->withErrors($validator)
-                ->withInput();
+                        ->withErrors($validator)
+                        ->withInput();
         }
         try {
-            $writer = Writer::createFromPath(new SplFileObject(ClientsController::$csvFileName, 'a+'), 'w');
+            $writer = Writer::createFromPath(new SplFileObject(self::$csvFileName, 'a+'), 'w');
             $currentClients = $this->getAllClients();
             if (!empty($currentClients)) {
                 $writer->insertAll($currentClients);
@@ -98,60 +101,62 @@ class ClientsController extends Controller
             $writer->insertOne($input);
 
             //write to log
-            $this->leLogger->Info('New Client Created with name: ' . $input['fullName']);
-        }
-        catch (Exception $e) {
+            $this->leLogger->Info('New Client Created with name: '.$input['fullName']);
+        } catch (Exception $e) {
             return redirect('clients/create')
-                ->withInput()
-                ->with('error', $e->getMessage());
+                        ->withInput()
+                        ->with('error', $e->getMessage());
         }
 
         return redirect('clients')
-            ->with('msg', 'Client Created Successfully');
+                        ->with('msg', 'Client Created Successfully');
     }
 
     /**
-    * Display the specified resource.
-    *
-    * @param  int  $id
-    * @return Response
-    */
+     * Display the specified resource.
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
     public function show($id)
     {
-    //
+        //
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return Response
      */
     public function edit($id)
     {
-    	//
+        //
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return Response
      */
     public function update($id)
     {
-    	//
+        //
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return Response
      */
     public function destroy($id)
     {
-    	//
+        //
     }
-
 }
