@@ -11,8 +11,8 @@
 |
 */
 
-Route::get('/', function(){
-	return redirect('clients');
+Route::get('/', function () {
+    return redirect('clients');
 });
 
 Route::get('home', 'HomeController@index');
@@ -20,6 +20,6 @@ Route::get('home', 'HomeController@index');
 Route::resource('clients', 'ClientsController');
 
 Route::controllers([
-	'auth' => 'Auth\AuthController',
-	'password' => 'Auth\PasswordController',
+    'auth'     => 'Auth\AuthController',
+    'password' => 'Auth\PasswordController',
 ]);
