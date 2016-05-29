@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG'),
+    'debug' => env('APP_DEBUG', TRUE),
 
     /*
     |--------------------------------------------------------------------------
@@ -146,6 +146,7 @@ return [
         'App\Providers\RouteServiceProvider',
 
         'Illuminate\Html\HtmlServiceProvider',
+        'Maatwebsite\Excel\ExcelServiceProvider',
 
     ],
 
@@ -196,6 +197,7 @@ return [
         'View'        => 'Illuminate\Support\Facades\View',
         'Form'        => 'Illuminate\Html\FormFacade',
         'HTML'        => 'Illuminate\Html\HtmlFacade',
+        'Excel'       => 'Maatwebsite\Excel\Facades\Excel',
 
     ],
 
